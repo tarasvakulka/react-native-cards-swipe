@@ -13,6 +13,7 @@ npm install react-native-cards-swipe
 ```js
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
+
 import CardsSwipe from 'react-native-cards-swipe';
 
 const cardsData = [
@@ -28,8 +29,8 @@ export default function App() {
       <CardsSwipe
         cards={cardsData}
         renderCard={(card) => (
-          <View style={styles.imgContainer}>
-            <Image style={styles.img} source={card.src} />
+          <View style={styles.card}>
+            <Image style={styles.cardImg} source={card.src} />
           </View>
         )}
       />
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  imgContainer: {
+  card: {
     width: '92%',
     height: 500,
     shadowColor: '#000000',
@@ -54,13 +55,26 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.07,
     shadowRadius: 3.3,
   },
-  img: {
+  cardImg: {
     width: '100%',
     height: '100%',
     borderRadius: 13,
   },
 });
 ```
+
+## CardsSwipe props
+| Props               | type          | description                           | required     | default       |
+| --------------------| ------------- | --------------------------------------| -------------| ------------- |
+| cards               | array         | data for the cards                    | yes          |               |
+| renderCard          | func          | renders the card with the current data| yes          |               |
+| initialIndex        | number        | initial card index                    |              | 0             |
+| containerStyle      | object        | container style                       |              | {}            |
+| cardContainerStyle  | object        | cardContainerStyle style              |              | {}            |
+| lowerCardZoom       | number        | lower card zoom                       |              | 0.95          |
+| animDuration        | number        | card animation duration               |              | 150           |
+| horizontalThreshold | number        | horizontal swipe threshold            |              | width * 0.65  |
+| rotationAngle       | number        | rotation angle (deg) for the card     |              | 10            |
 
 ## Contributing
 
