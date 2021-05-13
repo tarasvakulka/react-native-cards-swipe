@@ -16,6 +16,8 @@ interface Props {
   y: Value;
   originY: Value;
   onSnap: (swipedRight: boolean) => void;
+  onStart: () => void;
+  onEnd: () => void;
   children: React.ReactNode;
 }
 
@@ -26,7 +28,15 @@ type AnimatedGHContext = {
 
 const { width } = Dimensions.get('window');
 
-const SwipePan = ({ x, y, onSnap, originY, children }: Props) => {
+const SwipePan = ({
+  x,
+  y,
+  onSnap,
+  onStart,
+  onEnd,
+  originY,
+  children,
+}: Props) => {
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (event, ctx: AnimatedGHContext) => {
       // with the context (ctx), we track the original start positions
@@ -35,6 +45,7 @@ const SwipePan = ({ x, y, onSnap, originY, children }: Props) => {
 
       // keep the y value for figuring out the image rotation direction
       originY.value = event.y;
+      runOnJS(onStart)();
     },
     onActive: (event, ctx) => {
       // user is actively touching and moving the image
@@ -42,6 +53,7 @@ const SwipePan = ({ x, y, onSnap, originY, children }: Props) => {
       y.value = ctx.startY + event.translationY;
     },
     onEnd: (event, ctx) => {
+      runOnJS(onEnd)();
       // dragged 40 percent of the screen's width
       const thresh = width * 0.4;
 

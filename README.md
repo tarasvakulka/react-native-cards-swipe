@@ -1,12 +1,17 @@
 # react-native-cards-swipe
 
-RN Cards Swipe
+React Native Card Stack Swiper
 
 ## Installation
+
+1. Install the react-native-cards-swipe package.
 
 ```sh
 npm install react-native-cards-swipe
 ```
+2.  Then you'll need to install [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/installation/) version >= 2.1.0 to your project.
+3.  Finally, you'll need to install [react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/) to your project.
+
 
 ## Usage
 
@@ -75,6 +80,25 @@ const styles = StyleSheet.create({
 | animDuration        | number        | card animation duration               |              | 150           |
 | horizontalThreshold | number        | horizontal swipe threshold            |              | width * 0.65  |
 | rotationAngle       | number        | rotation angle (deg) for the card     |              | 10            |
+| onSwipeStart        | func          | function to be called when a card swipe starts                  |    | () => {} |
+| onSwipeEnd          | func          | function to be called when a card swipe ends (card is released) |    | () => {} |
+| onSwiped            | func          | function to be called when a card is swiped. it receives the swiped card index |    | () => {} |
+| onSwipedLeft        | func          | function to be called when a card is swiped left. it receives the swiped card index |    | () => {} |
+| onSwipedRight       | func          | function to be called when a card is swiped right. it receives the swiped card index |    | () => {} |
+
+## CardsSwipe actions
+| Props             | type          |
+| ----------------- | ------------- |
+| swipeLeft         | func          |
+| swipeRight        | func          |
+
+```javascript
+  <CardsSwipe ref={swiper => { this.swiper = swiper }} />
+
+  <TouchableOpacity onPress={ () => { this.swiper.swipeLeft() }}>
+    <Text>Left</Text>
+  </TouchableOpacity>
+```
 
 ## Contributing
 
