@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const likeNopeDeg = '22deg';
 
@@ -8,8 +8,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
   },
   row: {
     width: '100%',

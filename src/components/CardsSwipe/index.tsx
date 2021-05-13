@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from 'react';
-import { Dimensions, Text, View } from 'react-native';
+import { Dimensions, Text, View, StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
+  runOnJS,
 } from 'react-native-reanimated';
 
 import SwipePan from '../SwipePan';
@@ -13,18 +15,29 @@ import CardWrap from '../CardWrap';
 import styles from './styles';
 
 const { width } = Dimensions.get('window');
-const rangeThreshold = width * 0.65;
 
 interface CardsSwipeProps {
   cards: Array<any>;
   renderCard: (card: any) => React.ReactNode;
   initialIndex?: number;
+  containerStyle?: StyleProp<ViewStyle>;
+  cardContainerStyle?: StyleProp<ViewStyle>;
+  lowerCardZoom?: number;
+  animDuration?: number;
+  horizontalThreshold?: number;
+  rotationAngle?: number;
 }
 
 const CardsSwipe = ({
   cards,
   renderCard,
   initialIndex = 0,
+  containerStyle = {},
+  cardContainerStyle = {},
+  lowerCardZoom = 0.95,
+  animDuration = 150,
+  horizontalThreshold = width * 0.65,
+  rotationAngle = 10,
 }: CardsSwipeProps) => {
   const [index, setIndex] = useState(initialIndex);
   const [key, setKey] = useState(0);
@@ -35,22 +48,11 @@ const CardsSwipe = ({
 
   const [secondIndex, setSecondIndex] = useState(index + 1);
   const onSwiped = useCallback(
-    async (right) => {
+    (right) => {
       // disable touches while animating
       setLock(true);
 
-      if (right) {
-        // spring 'over the screen' to the right
-        x.value = withSpring(width * 1.5);
-        y.value = withSpring(0);
-      } else {
-        // spring 'over the screen' to the left
-        x.value = withSpring(-width * 1.5);
-        y.value = withSpring(0);
-      }
-      // while the spring/swipe animation is running, we do not want to switch
-      // to the next image already, but just when the image is out of screen
-      setTimeout(() => {
+      const onEndCardAnimation = () => {
         const incSafe = (i: number) => (i + 1) % cards.length;
         const nextIndex = incSafe(index);
 
@@ -70,7 +72,21 @@ const CardsSwipe = ({
 
         setKey(key + 1);
         setLock(false);
-      }, 300);
+      };
+
+      if (right) {
+        // spring 'over the screen' to the right
+        x.value = withTiming(width * 1.5, { duration: animDuration }, () => {
+          runOnJS(onEndCardAnimation)();
+        });
+        y.value = withSpring(0);
+      } else {
+        // spring 'over the screen' to the left
+        x.value = withTiming(-width * 1.5, { duration: animDuration }, () => {
+          runOnJS(onEndCardAnimation)();
+        });
+        y.value = withSpring(0);
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [key, index, secondIndex, cards]
@@ -82,7 +98,7 @@ const CardsSwipe = ({
 
   const nopeOpacityStyle = useAnimatedStyle(() => {
     // swipe left - x is getting closer more negative - more opacity
-    const opacity = interpolate(x.value, [0, -rangeThreshold], [0, 1]);
+    const opacity = interpolate(x.value, [0, -horizontalThreshold], [0, 1]);
 
     return {
       opacity: overrideNopeOpacity.value || opacity,
@@ -91,7 +107,7 @@ const CardsSwipe = ({
 
   const likeOpacityStyle = useAnimatedStyle(() => {
     // swipe right - x is getting closer more positive - more opacity
-    const opacity = interpolate(x.value, [0, rangeThreshold], [0, 1]);
+    const opacity = interpolate(x.value, [0, horizontalThreshold], [0, 1]);
 
     return {
       opacity: overrideLikeOpacity.value || opacity,
@@ -101,8 +117,12 @@ const CardsSwipe = ({
   const style = useAnimatedStyle(() => {
     const factor = 1;
 
-    // the further we are to the left (-) or right (+), we rotate by up to 10deg
-    const rotateZ = interpolate(x.value, [0, factor * rangeThreshold], [0, 10]);
+    // the further we are to the left (-) or right (+), we rotate by up to rotationAngle
+    const rotateZ = interpolate(
+      x.value,
+      [0, factor * horizontalThreshold],
+      [0, rotationAngle]
+    );
 
     // the image rotation with border radius is not working well on android, thus disabled
     return {
@@ -123,8 +143,8 @@ const CardsSwipe = ({
   const lowerStyle = useAnimatedStyle(() => {
     const lowerCardScale = interpolate(
       x.value,
-      [-rangeThreshold, -0.01, 0, 0.01, rangeThreshold],
-      [1, 0.95, 0.95, 0.95, 1],
+      [-horizontalThreshold, -0.01, 0, 0.01, horizontalThreshold],
+      [1, lowerCardZoom, lowerCardZoom, lowerCardZoom, 1],
       Animated.Extrapolate.CLAMP
     );
 
@@ -143,7 +163,10 @@ const CardsSwipe = ({
   });
 
   return (
-    <View pointerEvents={lock ? 'none' : 'auto'} style={styles.container}>
+    <View
+      pointerEvents={lock ? 'none' : 'auto'}
+      style={[styles.container, containerStyle]}
+    >
       <CardWrap
         {...{
           key: secondIndex,
@@ -152,6 +175,7 @@ const CardsSwipe = ({
           cardData: cards[secondIndex],
           index: secondIndex,
           backCard: true,
+          cardContainerStyle,
         }}
       >
         {renderCard(cards[secondIndex])}
@@ -163,6 +187,7 @@ const CardsSwipe = ({
             cardData: cards[index],
             index,
             key: index,
+            cardContainerStyle,
           }}
         >
           {renderCard(cards[index])}
