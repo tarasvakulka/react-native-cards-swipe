@@ -17,9 +17,15 @@ export default function App() {
       <CardsSwipe
         ref={swiper}
         cards={cardsData}
+        loop={false}
+        renderNoMoreCard={() => <Text>{'No more Cards!'}</Text>}
         renderCard={(card) => (
           <View style={styles.imgContainer}>
-            <Image style={styles.img} source={card.src} />
+            <Image
+              style={styles.img}
+              source={card.src}
+              defaultSource={card.src}
+            />
           </View>
         )}
       />

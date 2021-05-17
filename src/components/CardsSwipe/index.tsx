@@ -2,7 +2,9 @@ import React, {
   forwardRef,
   Ref,
   useCallback,
+  useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from 'react';
 import { Dimensions, Text, View, StyleProp, ViewStyle } from 'react-native';
@@ -25,6 +27,8 @@ const { width } = Dimensions.get('window');
 interface CardsSwipeProps {
   cards: Array<any>;
   renderCard: (card: any) => React.ReactNode;
+  loop?: boolean;
+  renderNoMoreCard?: () => React.ReactNode;
   initialIndex?: number;
   containerStyle?: StyleProp<ViewStyle>;
   cardContainerStyle?: StyleProp<ViewStyle>;
@@ -44,6 +48,8 @@ const CardsSwipe = forwardRef(
     {
       cards,
       renderCard,
+      loop = true,
+      renderNoMoreCard = () => null,
       initialIndex = 0,
       containerStyle = {},
       cardContainerStyle = {},
@@ -62,6 +68,7 @@ const CardsSwipe = forwardRef(
     const [index, setIndex] = useState(initialIndex);
     const [key, setKey] = useState(0);
     const [lock, setLock] = useState(false);
+    const [noMoreCards, setNoMoreCards] = useState(false);
     const scale = useSharedValue(1);
     const overrideNopeOpacity = useSharedValue(0);
     const overrideLikeOpacity = useSharedValue(0);
@@ -69,6 +76,21 @@ const CardsSwipe = forwardRef(
     const [secondIndex, setSecondIndex] = useState(index + 1);
 
     useImperativeHandle(ref, () => ({ swipeLeft, swipeRight }));
+
+    const prevCards = useRef(cards);
+    useEffect(() => {
+      if (prevCards.current !== cards) {
+        prevCards.current = cards;
+        if (noMoreCards) {
+          setIndex(0);
+          setSecondIndex(1);
+          setNoMoreCards(false);
+          x.value = 0;
+          y.value = 0;
+        }
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cards]);
 
     const swipeLeft = () => {
       overrideNopeOpacity.value = withSpring(1);
@@ -96,23 +118,34 @@ const CardsSwipe = forwardRef(
         onSwiped(index);
 
         const onEndCardAnimation = () => {
-          const incSafe = (i: number) => (i + 1) % cards.length;
-          const nextIndex = incSafe(index);
+          const resetPosition = () => {
+            // reset positions
+            x.value = 0;
+            y.value = 0;
+          };
 
-          // next image 'behind'
-          setSecondIndex(incSafe(secondIndex));
+          if (loop || index + 2 < cards.length) {
+            const incSafe = (i: number) => (i + 1) % cards.length;
+            const nextIndex = incSafe(index);
 
-          // next image 'on top'
-          setIndex(nextIndex);
+            // next image 'behind'
+            setSecondIndex(incSafe(secondIndex));
 
-          // reset values/positions
-          x.value = 0;
-          y.value = 0;
+            // next image 'on top'
+            setIndex(nextIndex);
+            resetPosition();
+          } else if (index + 1 < cards.length) {
+            setSecondIndex(-1);
+            setIndex(index + 1);
+            resetPosition();
+          } else {
+            setNoMoreCards(true);
+          }
+          // reset values
           overrideNopeOpacity.value = 0;
           overrideLikeOpacity.value = 0;
 
           // prevent memory issues
-
           setKey(key + 1);
           setLock(false);
         };
@@ -136,6 +169,13 @@ const CardsSwipe = forwardRef(
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [key, index, secondIndex, cards, onSwiped, onSwipedRight, onSwipedLeft]
     );
+
+    const renderNoMoreCardsContainer = () => {
+      if (noMoreCards) {
+        return <View>{renderNoMoreCard()}</View>;
+      }
+      return null;
+    };
 
     const x = useSharedValue(0);
     const y = useSharedValue(0);
@@ -202,7 +242,7 @@ const CardsSwipe = forwardRef(
         transform: [
           { translateX: 0 },
           { translateY: 0 },
-          { scale: lowerCardScale },
+          { scale: secondIndex >= 0 ? lowerCardScale : 1 },
         ],
       };
     });
@@ -212,19 +252,21 @@ const CardsSwipe = forwardRef(
         pointerEvents={lock ? 'none' : 'auto'}
         style={[styles.container, containerStyle]}
       >
-        <CardWrap
-          {...{
-            key: secondIndex,
-            pointerEvents: 'none',
-            style: lowerStyle,
-            cardData: cards[secondIndex],
-            index: secondIndex,
-            backCard: true,
-            cardContainerStyle,
-          }}
-        >
-          {renderCard(cards[secondIndex])}
-        </CardWrap>
+        {secondIndex >= 0 ? (
+          <CardWrap
+            {...{
+              key: secondIndex,
+              pointerEvents: 'none',
+              style: lowerStyle,
+              cardData: cards[secondIndex],
+              index: secondIndex,
+              backCard: true,
+              cardContainerStyle,
+            }}
+          >
+            {renderCard(cards[secondIndex])}
+          </CardWrap>
+        ) : null}
         <SwipePan
           key={key}
           {...{
@@ -258,6 +300,7 @@ const CardsSwipe = forwardRef(
             </Animated.View>
           </CardWrap>
         </SwipePan>
+        {renderNoMoreCardsContainer()}
       </View>
     );
   }

@@ -80,6 +80,8 @@ const styles = StyleSheet.create({
 | animDuration        | number        | card animation duration               |              | 150           |
 | horizontalThreshold | number        | horizontal swipe threshold            |              | width * 0.65  |
 | rotationAngle       | number        | rotation angle (deg) for the card     |              | 10            |
+| loop                | bool          | keep swiping indefinitely             |              | true          |
+| renderNoMoreCards   | func          | renders what is shown after swiped last card|        | () => null    |
 | onSwipeStart        | func          | function to be called when a card swipe starts                  |    | () => {} |
 | onSwipeEnd          | func          | function to be called when a card swipe ends (card is released) |    | () => {} |
 | onSwiped            | func          | function to be called when a card is swiped. it receives the swiped card index |    | () => {} |
