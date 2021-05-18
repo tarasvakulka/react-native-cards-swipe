@@ -39,35 +39,27 @@ const SwipePan = ({
 }: Props) => {
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (event, ctx: AnimatedGHContext) => {
-      // with the context (ctx), we track the original start positions
       ctx.startX = x.value;
       ctx.startY = y.value;
 
-      // keep the y value for figuring out the image rotation direction
       originY.value = event.y;
       runOnJS(onStart)();
     },
     onActive: (event, ctx) => {
-      // user is actively touching and moving the image
       x.value = ctx.startX + event.translationX;
       y.value = ctx.startY + event.translationY;
     },
     onEnd: (event, ctx) => {
       runOnJS(onEnd)();
-      // dragged 40 percent of the screen's width
-      const thresh = width * 0.4;
 
-      // how much the user moved the image horizontally
+      const thresh = width * 0.4;
       const diff = ctx.startX + event.translationX;
 
       if (diff > thresh) {
-        // swiped right
         runOnJS(onSnap)(true);
       } else if (diff < -1 * thresh) {
-        // swiped left
         runOnJS(onSnap)(false);
       } else {
-        // no left or right swipe, so 'jump' back to the initial position
         x.value = withSpring(0);
         y.value = withSpring(0);
       }
