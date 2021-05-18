@@ -1,6 +1,6 @@
 # react-native-cards-swipe
 
-React Native Card Stack Swiper
+Powerful React Native Card Stack Swiper
 
 ## Preview
 
