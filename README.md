@@ -4,7 +4,7 @@ React Native Card Stack Swiper
 
 ## Preview
 
-![App preview](/example1.gif)
+![App preview](/example2.gif)
 
 ## Installation
 
