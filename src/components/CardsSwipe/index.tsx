@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Dimensions, Text, View, StyleProp, ViewStyle } from 'react-native';
+import { Dimensions, View, StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -29,6 +29,8 @@ interface CardsSwipeProps {
   renderCard: (card: any) => React.ReactNode;
   loop?: boolean;
   renderNoMoreCard?: () => React.ReactNode;
+  renderYup?: () => React.ReactNode;
+  renderNope?: () => React.ReactNode;
   initialIndex?: number;
   containerStyle?: StyleProp<ViewStyle>;
   cardContainerStyle?: StyleProp<ViewStyle>;
@@ -50,6 +52,8 @@ const CardsSwipe = forwardRef(
       renderCard,
       loop = true,
       renderNoMoreCard = () => null,
+      renderYup = () => null,
+      renderNope = () => null,
       initialIndex = 0,
       containerStyle = {},
       cardContainerStyle = {},
@@ -93,13 +97,17 @@ const CardsSwipe = forwardRef(
     }, [cards]);
 
     const swipeLeft = () => {
-      overrideNopeOpacity.value = withSpring(1);
-      setTimeout(() => onCardSwiped(false), 300);
+      if (index >= 0) {
+        overrideNopeOpacity.value = withSpring(1);
+        setTimeout(() => onCardSwiped(false), 300);
+      }
     };
 
     const swipeRight = () => {
-      overrideLikeOpacity.value = withSpring(1);
-      setTimeout(() => onCardSwiped(true), 300);
+      if (index >= 0) {
+        overrideLikeOpacity.value = withSpring(1);
+        setTimeout(() => onCardSwiped(true), 300);
+      }
     };
 
     const onStartSwipe = useCallback(() => {
@@ -112,26 +120,21 @@ const CardsSwipe = forwardRef(
 
     const onCardSwiped = useCallback(
       (right) => {
-        // disable touches while animating
         setLock(true);
 
         onSwiped(index);
 
         const onEndCardAnimation = () => {
           const resetPosition = () => {
-            // reset positions
             x.value = 0;
             y.value = 0;
           };
-
           if (loop || index + 2 < cards.length) {
             const incSafe = (i: number) => (i + 1) % cards.length;
             const nextIndex = incSafe(index);
 
-            // next image 'behind'
             setSecondIndex(incSafe(secondIndex));
 
-            // next image 'on top'
             setIndex(nextIndex);
             resetPosition();
           } else if (index + 1 < cards.length) {
@@ -139,27 +142,24 @@ const CardsSwipe = forwardRef(
             setIndex(index + 1);
             resetPosition();
           } else {
+            setIndex(-1);
             setNoMoreCards(true);
           }
-          // reset values
           overrideNopeOpacity.value = 0;
           overrideLikeOpacity.value = 0;
 
-          // prevent memory issues
           setKey(key + 1);
           setLock(false);
         };
 
         if (right) {
           onSwipedRight(index);
-          // spring 'over the screen' to the right
           x.value = withTiming(width * 1.5, { duration: animDuration }, () => {
             runOnJS(onEndCardAnimation)();
           });
           y.value = withSpring(0);
         } else {
           onSwipedLeft(index);
-          // spring 'over the screen' to the left
           x.value = withTiming(-width * 1.5, { duration: animDuration }, () => {
             runOnJS(onEndCardAnimation)();
           });
@@ -182,7 +182,6 @@ const CardsSwipe = forwardRef(
     const originY = useSharedValue(0);
 
     const nopeOpacityStyle = useAnimatedStyle(() => {
-      // swipe left - x is getting closer more negative - more opacity
       const opacity = interpolate(x.value, [0, -horizontalThreshold], [0, 1]);
 
       return {
@@ -191,7 +190,6 @@ const CardsSwipe = forwardRef(
     });
 
     const likeOpacityStyle = useAnimatedStyle(() => {
-      // swipe right - x is getting closer more positive - more opacity
       const opacity = interpolate(x.value, [0, horizontalThreshold], [0, 1]);
 
       return {
@@ -202,17 +200,16 @@ const CardsSwipe = forwardRef(
     const style = useAnimatedStyle(() => {
       const factor = 1;
 
-      // the further we are to the left (-) or right (+), we rotate by up to rotationAngle
       const rotateZ = interpolate(
         x.value,
         [0, factor * horizontalThreshold],
         [0, rotationAngle]
       );
 
-      // the image rotation with border radius is not working well on android, thus disabled
       return {
         elevation: 2,
         width: '100%',
+        height: '100%',
         position: 'absolute',
         alignItems: 'center',
         justifyContent: 'center',
@@ -236,6 +233,7 @@ const CardsSwipe = forwardRef(
       return {
         zIndex: -1,
         width: '100%',
+        height: '100%',
         position: 'absolute',
         alignItems: 'center',
         justifyContent: 'center',
@@ -267,39 +265,41 @@ const CardsSwipe = forwardRef(
             {renderCard(cards[secondIndex])}
           </CardWrap>
         ) : null}
-        <SwipePan
-          key={key}
-          {...{
-            onSnap: onCardSwiped,
-            onStart: onStartSwipe,
-            onEnd: onEndSwipe,
-            x,
-            y,
-            originY,
-          }}
-        >
-          <CardWrap
+        {index >= 0 ? (
+          <SwipePan
+            key={key}
             {...{
-              style,
-              cardData: cards[index],
-              index,
-              key: index,
-              cardContainerStyle,
+              onSnap: onCardSwiped,
+              onStart: onStartSwipe,
+              onEnd: onEndSwipe,
+              x,
+              y,
+              originY,
             }}
           >
-            {renderCard(cards[index])}
-            <Animated.View style={styles.overlay}>
-              <View style={styles.row}>
-                <Animated.View style={[styles.like, likeOpacityStyle]}>
-                  <Text style={styles.likeLabel}>YEP</Text>
-                </Animated.View>
-                <Animated.View style={[styles.nope, nopeOpacityStyle]}>
-                  <Text style={styles.nopeLabel}>NOPE</Text>
-                </Animated.View>
-              </View>
-            </Animated.View>
-          </CardWrap>
-        </SwipePan>
+            <CardWrap
+              {...{
+                style,
+                cardData: cards[index],
+                index,
+                key: index,
+                cardContainerStyle,
+              }}
+            >
+              {renderCard(cards[index])}
+              <Animated.View style={styles.overlay}>
+                <View style={styles.row}>
+                  <Animated.View style={likeOpacityStyle}>
+                    {renderYup()}
+                  </Animated.View>
+                  <Animated.View style={nopeOpacityStyle}>
+                    {renderNope()}
+                  </Animated.View>
+                </View>
+              </Animated.View>
+            </CardWrap>
+          </SwipePan>
+        ) : null}
         {renderNoMoreCardsContainer()}
       </View>
     );

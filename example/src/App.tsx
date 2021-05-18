@@ -17,15 +17,31 @@ export default function App() {
       <CardsSwipe
         ref={swiper}
         cards={cardsData}
+        containerStyle={styles.cardsSwipeContainer}
+        cardContainerStyle={styles.cardContainer}
         loop={false}
-        renderNoMoreCard={() => <Text>{'No more Cards!'}</Text>}
         renderCard={(card) => (
-          <View style={styles.imgContainer}>
+          <View style={styles.card}>
             <Image
-              style={styles.img}
+              style={styles.cardImg}
               source={card.src}
               defaultSource={card.src}
             />
+          </View>
+        )}
+        renderNoMoreCard={() => (
+          <View style={styles.noMoreCard}>
+            <Text>{'No more Cards!'}</Text>
+          </View>
+        )}
+        renderYup={() => (
+          <View style={styles.like}>
+            <Text style={styles.likeLabel}>YEP</Text>
+          </View>
+        )}
+        renderNope={() => (
+          <View style={styles.nope}>
+            <Text style={styles.nopeLabel}>NOPE</Text>
           </View>
         )}
       />
@@ -36,16 +52,21 @@ export default function App() {
           }}
           style={[styles.button, styles.leftBtn]}
         >
-          <Text>No</Text>
+          <Image
+            source={require('./assets/images/dislike.png')}
+            style={styles.dislikeIcon}
+          />
         </TouchableOpacity>
-
         <TouchableOpacity
           onPress={() => {
             if (swiper.current) swiper.current.swipeRight();
           }}
           style={[styles.button, styles.rightBtn]}
         >
-          <Text>Yes</Text>
+          <Image
+            source={require('./assets/images/like.png')}
+            style={styles.likeIcon}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -58,9 +79,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  imgContainer: {
+  cardsSwipeContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingTop: 40,
+    zIndex: 1,
+    elevation: 1,
+  },
+  cardContainer: {
     width: '92%',
-    height: 500,
+    height: '100%',
+  },
+  card: {
+    width: '100%',
+    height: '100%',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 13,
     shadowColor: '#000000',
     shadowOffset: {
       width: 0,
@@ -68,34 +104,81 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.07,
     shadowRadius: 3.3,
+    elevation: 6,
   },
-  img: {
+  cardImg: {
     width: '100%',
     height: '100%',
     borderRadius: 13,
+  },
+  noMoreCard: {
+    width: '100%',
+    height: '100%',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   controlRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'flex-start',
     width: '100%',
-    minHeight: 40,
-    top: -30,
-    marginVertical: 16,
+    paddingHorizontal: 20,
+    marginTop: 22,
+    marginBottom: 30,
   },
   button: {
+    flexDirection: 'row',
     justifyContent: 'center',
-    alignContent: 'center',
     alignItems: 'center',
     width: 70,
-    height: 55,
+    height: 70,
     padding: 14,
-    borderRadius: 15,
+    borderWidth: 3,
+    borderRadius: 35,
   },
   rightBtn: {
-    backgroundColor: 'lightgreen',
+    borderColor: '#00D400',
   },
   leftBtn: {
-    backgroundColor: '#ff726f',
+    borderColor: '#E60000',
+  },
+  likeIcon: {
+    width: 40,
+    height: 40,
+    top: -3,
+  },
+  dislikeIcon: {
+    width: 40,
+    height: 40,
+    top: 3,
+  },
+  nope: {
+    borderWidth: 5,
+    borderRadius: 6,
+    padding: 8,
+    marginRight: 30,
+    marginTop: 25,
+    borderColor: 'red',
+    transform: [{ rotateZ: '22deg' }],
+  },
+  nopeLabel: {
+    fontSize: 32,
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  like: {
+    borderWidth: 5,
+    borderRadius: 6,
+    padding: 8,
+    marginLeft: 30,
+    marginTop: 20,
+    borderColor: 'lightgreen',
+    transform: [{ rotateZ: '-22deg' }],
+  },
+  likeLabel: {
+    fontSize: 32,
+    color: 'lightgreen',
+    fontWeight: 'bold',
   },
 });
