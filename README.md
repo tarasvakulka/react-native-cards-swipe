@@ -2,6 +2,10 @@
 
 Powerful React Native Card Stack Swiper
 
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/lhandel/react-native-cards-swipe/issues)
+[![npm version](https://badge.fury.io/js/react-native-cards-swipe.svg)](https://badge.fury.io/js/react-native-cards-swipe)
+[![npm downloads](https://img.shields.io/npm/dt/react-native-cards-swipe.svg)](https://badge.fury.io/js/react-native-cards-swipe)
+
 ## Preview
 
 ![App preview](/example.gif)
