@@ -34,7 +34,7 @@ export default function App() {
             <Text>{'No more Cards!'}</Text>
           </View>
         )}
-        renderYup={() => (
+        renderYep={() => (
           <View style={styles.like}>
             <Text style={styles.likeLabel}>YEP</Text>
           </View>

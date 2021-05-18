@@ -29,7 +29,7 @@ interface CardsSwipeProps {
   renderCard: (card: any) => React.ReactNode;
   loop?: boolean;
   renderNoMoreCard?: () => React.ReactNode;
-  renderYup?: () => React.ReactNode;
+  renderYep?: () => React.ReactNode;
   renderNope?: () => React.ReactNode;
   initialIndex?: number;
   containerStyle?: StyleProp<ViewStyle>;
@@ -52,7 +52,7 @@ const CardsSwipe = forwardRef(
       renderCard,
       loop = true,
       renderNoMoreCard = () => null,
-      renderYup = () => null,
+      renderYep = () => null,
       renderNope = () => null,
       initialIndex = 0,
       containerStyle = {},
@@ -290,7 +290,7 @@ const CardsSwipe = forwardRef(
               <Animated.View style={styles.overlay}>
                 <View style={styles.row}>
                   <Animated.View style={likeOpacityStyle}>
-                    {renderYup()}
+                    {renderYep()}
                   </Animated.View>
                   <Animated.View style={nopeOpacityStyle}>
                     {renderNope()}

@@ -82,6 +82,8 @@ const styles = StyleSheet.create({
 | rotationAngle       | number        | rotation angle (deg) for the card     |              | 10            |
 | loop                | bool          | keep swiping indefinitely             |              | true          |
 | renderNoMoreCards   | func          | renders what is shown after swiped last card|        | () => null    |
+| renderYep           | func          | renders Yep label                     |              | () => null    |
+| renderNope          | func          | renders Nope label                    |              | () => null    |
 | onSwipeStart        | func          | function to be called when a card swipe starts                  |    | () => {} |
 | onSwipeEnd          | func          | function to be called when a card swipe ends (card is released) |    | () => {} |
 | onSwiped            | func          | function to be called when a card is swiped. it receives the swiped card index |    | () => {} |
