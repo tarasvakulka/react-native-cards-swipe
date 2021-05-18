@@ -33,6 +33,7 @@ export default function App() {
     <View style={styles.container}>
       <CardsSwipe
         cards={cardsData}
+        cardContainerStyle={styles.cardContainer}
         renderCard={(card) => (
           <View style={styles.card}>
             <Image style={styles.cardImg} source={card.src} />
@@ -49,9 +50,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  card: {
+  cardContainer: {
     width: '92%',
-    height: 500,
+    height: '70%',
+  },
+  card: {
+    width: '100%',
+    height: '100%',
     shadowColor: '#000000',
     shadowOffset: {
       width: 0,
