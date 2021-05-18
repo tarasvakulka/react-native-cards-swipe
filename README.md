@@ -2,6 +2,10 @@
 
 React Native Card Stack Swiper
 
+## Preview
+
+![App preview](/example1.gif)
+
 ## Installation
 
 1. Install the react-native-cards-swipe package.

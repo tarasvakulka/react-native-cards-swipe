@@ -1,7 +1,7 @@
 {
   "name": "react-native-cards-swipe",
-  "version": "0.1.0",
-  "description": "RN Cards Swipe",
+  "version": "1.0.0",
+  "description": "Powerful RN Card Swiper",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
