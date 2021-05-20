@@ -44,7 +44,11 @@ export default function App() {
         cardContainerStyle={styles.cardContainer}
         renderCard={(card) => (
           <View style={styles.card}>
-            <Image style={styles.cardImg} source={card.src} />
+            <Image
+              style={styles.cardImg}
+              source={card.src}
+              defaultSource={card.src}
+            />
           </View>
         )}
       />
