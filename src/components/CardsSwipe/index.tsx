@@ -15,6 +15,7 @@ import Animated, {
   withSpring,
   withTiming,
   runOnJS,
+  withDelay,
 } from 'react-native-reanimated';
 
 import SwipePan from '../SwipePan';
@@ -70,7 +71,6 @@ const CardsSwipe = forwardRef(
     ref: Ref<CardsSwipeRefObject>
   ) => {
     const [index, setIndex] = useState(initialIndex);
-    const [key, setKey] = useState(0);
     const [lock, setLock] = useState(false);
     const [noMoreCards, setNoMoreCards] = useState(false);
     const scale = useSharedValue(1);
@@ -125,22 +125,22 @@ const CardsSwipe = forwardRef(
         onSwiped(index);
 
         const onEndCardAnimation = () => {
-          const resetPosition = () => {
-            x.value = 0;
-            y.value = 0;
+          const resetPosition = (secondCardIndex: number) => {
+            x.value = withDelay(
+              100,
+              withTiming(0, { duration: 0 }, () => {
+                runOnJS(setSecondIndex)(secondCardIndex);
+              })
+            );
+            y.value = withDelay(100, withTiming(0, { duration: 0 }));
           };
           if (loop || index + 2 < cards.length) {
             const incSafe = (i: number) => (i + 1) % cards.length;
-            const nextIndex = incSafe(index);
-
-            setSecondIndex(incSafe(secondIndex));
-
-            setIndex(nextIndex);
-            resetPosition();
+            setIndex(incSafe(index));
+            resetPosition(incSafe(secondIndex));
           } else if (index + 1 < cards.length) {
-            setSecondIndex(-1);
             setIndex(index + 1);
-            resetPosition();
+            resetPosition(-1);
           } else {
             setIndex(-1);
             setNoMoreCards(true);
@@ -148,7 +148,6 @@ const CardsSwipe = forwardRef(
           overrideNopeOpacity.value = 0;
           overrideLikeOpacity.value = 0;
 
-          setKey(key + 1);
           setLock(false);
         };
 
@@ -167,7 +166,7 @@ const CardsSwipe = forwardRef(
         }
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [key, index, secondIndex, cards, onSwiped, onSwipedRight, onSwipedLeft]
+      [index, secondIndex, cards, onSwiped, onSwipedRight, onSwipedLeft]
     );
 
     const renderNoMoreCardsContainer = () => {
@@ -256,9 +255,6 @@ const CardsSwipe = forwardRef(
               key: secondIndex,
               pointerEvents: 'none',
               style: lowerStyle,
-              cardData: cards[secondIndex],
-              index: secondIndex,
-              backCard: true,
               cardContainerStyle,
             }}
           >
@@ -267,7 +263,6 @@ const CardsSwipe = forwardRef(
         ) : null}
         {index >= 0 ? (
           <SwipePan
-            key={key}
             {...{
               onSnap: onCardSwiped,
               onStart: onStartSwipe,
@@ -280,9 +275,6 @@ const CardsSwipe = forwardRef(
             <CardWrap
               {...{
                 style,
-                cardData: cards[index],
-                index,
-                key: index,
                 cardContainerStyle,
               }}
             >

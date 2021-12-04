@@ -22,11 +22,7 @@ export default function App() {
         loop={false}
         renderCard={(card) => (
           <View style={styles.card}>
-            <Image
-              style={styles.cardImg}
-              source={card.src}
-              defaultSource={card.src}
-            />
+            <Image style={styles.cardImg} source={card.src} />
           </View>
         )}
         renderNoMoreCard={() => (

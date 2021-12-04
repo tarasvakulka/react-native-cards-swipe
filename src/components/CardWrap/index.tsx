@@ -11,9 +11,6 @@ const CardWrap = React.forwardRef(
       ...rest
     }: {
       style: ViewStyle;
-      index: number;
-      cardData: object;
-      backCard?: boolean;
       children?: React.ReactNode;
       cardContainerStyle: StyleProp<ViewStyle>;
     },
