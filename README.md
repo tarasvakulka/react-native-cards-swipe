@@ -47,7 +47,6 @@ export default function App() {
             <Image
               style={styles.cardImg}
               source={card.src}
-              defaultSource={card.src}
             />
           </View>
         )}
