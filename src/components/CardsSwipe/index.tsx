@@ -279,7 +279,7 @@ const CardsSwipe = forwardRef(
               }}
             >
               {renderCard(cards[index])}
-              <Animated.View style={styles.overlay}>
+              <Animated.View style={styles.overlay} pointerEvents={'none'}>
                 <View style={styles.row}>
                   <Animated.View style={likeOpacityStyle}>
                     {renderYep()}
