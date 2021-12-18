@@ -96,6 +96,26 @@ const CardsSwipe = forwardRef(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cards]);
 
+    const prevIndex = useRef(index);
+    useEffect(() => {
+      if (prevIndex.current !== index) {
+        const secondCardIndex = (!(loop || prevIndex.current + 2 < cards.length) && prevIndex.current + 1 < cards.length) ? -1 : incSafe(index);
+        prevIndex.current = index;
+        if (index >= 0) {
+          x.value = withDelay(
+            100,
+            withTiming(0, { duration: 0 }, () => {
+              runOnJS(setSecondIndex)(secondCardIndex);
+            })
+          );
+          y.value = withDelay(100, withTiming(0, { duration: 0 }));
+        }
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [index]);
+
+    const incSafe = (i: number) => (i + 1) % cards.length;
+
     const swipeLeft = () => {
       if (index >= 0) {
         overrideNopeOpacity.value = withSpring(1);
@@ -125,22 +145,10 @@ const CardsSwipe = forwardRef(
         onSwiped(index);
 
         const onEndCardAnimation = () => {
-          const resetPosition = (secondCardIndex: number) => {
-            x.value = withDelay(
-              100,
-              withTiming(0, { duration: 0 }, () => {
-                runOnJS(setSecondIndex)(secondCardIndex);
-              })
-            );
-            y.value = withDelay(100, withTiming(0, { duration: 0 }));
-          };
           if (loop || index + 2 < cards.length) {
-            const incSafe = (i: number) => (i + 1) % cards.length;
             setIndex(incSafe(index));
-            resetPosition(incSafe(secondIndex));
           } else if (index + 1 < cards.length) {
             setIndex(index + 1);
-            resetPosition(-1);
           } else {
             setIndex(-1);
             setNoMoreCards(true);
