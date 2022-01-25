@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
 | horizontalThreshold | number        | horizontal swipe threshold            |              | width * 0.65  |
 | rotationAngle       | number        | rotation angle (deg) for the card     |              | 10            |
 | loop                | bool          | keep swiping indefinitely             |              | true          |
-| renderNoMoreCards   | func          | renders what is shown after swiped last card|        | () => null    |
+| renderNoMoreCard    | func          | renders what is shown after swiped last card|        | () => null    |
 | renderYep           | func          | renders Yep label                     |              | () => null    |
 | renderNope          | func          | renders Nope label                    |              | () => null    |
 | onSwipeStart        | func          | function to be called when a card swipe starts                  |    | () => {} |
@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
 | onSwiped            | func          | function to be called when a card is swiped. it receives the swiped card index |    | () => {} |
 | onSwipedLeft        | func          | function to be called when a card is swiped left. it receives the swiped card index |    | () => {} |
 | onSwipedRight       | func          | function to be called when a card is swiped right. it receives the swiped card index |    | () => {} |
+| onNoMoreCards       | func          | function to be called when all elements in array are finished  |    | () => {} |
 
 ## CardsSwipe actions
 | Props             | type          |

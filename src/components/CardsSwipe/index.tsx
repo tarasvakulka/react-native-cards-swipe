@@ -44,6 +44,7 @@ interface CardsSwipeProps {
   onSwiped?: (index: number) => void;
   onSwipedLeft?: (index: number) => void;
   onSwipedRight?: (index: number) => void;
+  onNoMoreCards?: () => void;
 }
 
 const CardsSwipe = forwardRef(
@@ -67,6 +68,7 @@ const CardsSwipe = forwardRef(
       onSwiped = () => {},
       onSwipedLeft = () => {},
       onSwipedRight = () => {},
+      onNoMoreCards = () => {},
     }: CardsSwipeProps,
     ref: Ref<CardsSwipeRefObject>
   ) => {
@@ -95,6 +97,12 @@ const CardsSwipe = forwardRef(
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cards]);
+
+    useEffect(() => {
+      if (noMoreCards) {
+        onNoMoreCards();
+      }
+    }, [noMoreCards, onNoMoreCards]);
 
     const swipeLeft = () => {
       if (index >= 0) {
