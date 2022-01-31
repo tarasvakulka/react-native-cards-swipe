@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
 | renderYep           | func          | renders Yep label                     |              | () => null    |
 | renderNope          | func          | renders Nope label                    |              | () => null    |
 | onSwipeStart        | func          | function to be called when a card swipe starts                  |    | () => {} |
+| onSwipeChangeDirection | func          | function to be called when a card is active and changes its direction (left, right).                   |    | () => {} |
 | onSwipeEnd          | func          | function to be called when a card swipe ends (card is released) |    | () => {} |
 | onSwiped            | func          | function to be called when a card is swiped. it receives the swiped card index |    | () => {} |
 | onSwipedLeft        | func          | function to be called when a card is swiped left. it receives the swiped card index |    | () => {} |
