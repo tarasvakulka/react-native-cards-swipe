@@ -18,7 +18,7 @@ import Animated, {
   withDelay,
 } from 'react-native-reanimated';
 
-import SwipePan from '../SwipePan';
+import SwipePan, { SWIPE_DIRECTION } from '../SwipePan';
 import CardWrap from '../CardWrap';
 
 import styles from './styles';
@@ -40,6 +40,7 @@ interface CardsSwipeProps {
   horizontalThreshold?: number;
   rotationAngle?: number;
   onSwipeStart?: (index: number) => void;
+  onSwipeChangeDirection?: (direction: SWIPE_DIRECTION) => void;
   onSwipeEnd?: (index: number) => void;
   onSwiped?: (index: number) => void;
   onSwipedLeft?: (index: number) => void;
@@ -64,6 +65,7 @@ const CardsSwipe = forwardRef(
       horizontalThreshold = width * 0.65,
       rotationAngle = 10,
       onSwipeStart = () => {},
+      onSwipeChangeDirection = () => {},
       onSwipeEnd = () => {},
       onSwiped = () => {},
       onSwipedLeft = () => {},
@@ -82,6 +84,10 @@ const CardsSwipe = forwardRef(
     const [secondIndex, setSecondIndex] = useState(index + 1);
 
     useImperativeHandle(ref, () => ({ swipeLeft, swipeRight }));
+
+    const x = useSharedValue(0);
+    const y = useSharedValue(0);
+    const originY = useSharedValue(0);
 
     const prevCards = useRef(cards);
     useEffect(() => {
@@ -121,6 +127,13 @@ const CardsSwipe = forwardRef(
     const onStartSwipe = useCallback(() => {
       onSwipeStart(index);
     }, [index, onSwipeStart]);
+
+    const onChangeSwipeDirection = useCallback(
+      (direction: SWIPE_DIRECTION) => {
+        onSwipeChangeDirection(direction);
+      },
+      [onSwipeChangeDirection]
+    );
 
     const onEndSwipe = useCallback(() => {
       onSwipeEnd(index);
@@ -183,10 +196,6 @@ const CardsSwipe = forwardRef(
       }
       return null;
     };
-
-    const x = useSharedValue(0);
-    const y = useSharedValue(0);
-    const originY = useSharedValue(0);
 
     const nopeOpacityStyle = useAnimatedStyle(() => {
       const opacity = interpolate(x.value, [0, -horizontalThreshold], [0, 1]);
@@ -274,6 +283,7 @@ const CardsSwipe = forwardRef(
             {...{
               onSnap: onCardSwiped,
               onStart: onStartSwipe,
+              onChangeDirection: onChangeSwipeDirection,
               onEnd: onEndSwipe,
               x,
               y,
