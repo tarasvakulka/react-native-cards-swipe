@@ -266,7 +266,7 @@ const CardsSwipe = forwardRef(
         pointerEvents={lock ? 'none' : 'auto'}
         style={[styles.container, containerStyle]}
       >
-        {secondIndex >= 0 ? (
+        {secondIndex >= 0 && cards.length > secondIndex ? (
           <CardWrap
             {...{
               key: secondIndex,
