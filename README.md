@@ -17,7 +17,7 @@ Powerful React Native Card Stack Swiper
 ```sh
 npm install react-native-cards-swipe
 ```
-2.  Then you'll need to install [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/installation/) version >= 2.1.0 to your project.
+2.  Then you'll need to install [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation) version >= 2.1.0 to your project.
 3.  Finally, you'll need to install [react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/) to your project.
 
 
