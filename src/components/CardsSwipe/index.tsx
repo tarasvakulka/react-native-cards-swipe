@@ -1,3 +1,6 @@
+import CardWrap from '../CardWrap';
+import SwipePan, { SWIPE_DIRECTION } from '../SwipePan';
+import styles from './styles';
 import React, {
   forwardRef,
   Ref,
@@ -17,17 +20,13 @@ import Animated, {
   runOnJS,
   withDelay,
 } from 'react-native-reanimated';
-
-import SwipePan, { SWIPE_DIRECTION } from '../SwipePan';
-import CardWrap from '../CardWrap';
-
-import styles from './styles';
+import type { GestureHandleEvent } from 'lib/typescript/types';
 
 const { width } = Dimensions.get('window');
 
 interface CardsSwipeProps {
   cards: Array<any>;
-  renderCard: (card: any) => React.ReactNode;
+  renderCard: (card: any, index: number) => React.ReactNode;
   loop?: boolean;
   renderNoMoreCard?: () => React.ReactNode;
   renderYep?: () => React.ReactNode;
@@ -46,6 +45,8 @@ interface CardsSwipeProps {
   onSwipedLeft?: (index: number) => void;
   onSwipedRight?: (index: number) => void;
   onNoMoreCards?: () => void;
+  onDragAround?: (event: GestureHandleEvent) => void;
+  onFinish?: (event: GestureHandleEvent) => void;
 }
 
 const CardsSwipe = forwardRef(
@@ -71,6 +72,8 @@ const CardsSwipe = forwardRef(
       onSwipedLeft = () => {},
       onSwipedRight = () => {},
       onNoMoreCards = () => {},
+      onDragAround = () => {},
+      onFinish = () => {},
     }: CardsSwipeProps,
     ref: Ref<CardsSwipeRefObject>
   ) => {
@@ -275,12 +278,14 @@ const CardsSwipe = forwardRef(
               cardContainerStyle,
             }}
           >
-            {renderCard(cards[secondIndex])}
+            {renderCard(cards[secondIndex], index)}
           </CardWrap>
         ) : null}
         {index >= 0 ? (
           <SwipePan
             {...{
+              onDragAround,
+              onFinish,
               onSnap: onCardSwiped,
               onStart: onStartSwipe,
               onChangeDirection: onChangeSwipeDirection,
@@ -296,7 +301,7 @@ const CardsSwipe = forwardRef(
                 cardContainerStyle,
               }}
             >
-              {renderCard(cards[index])}
+              {renderCard(cards[index], index)}
               <Animated.View style={styles.overlay} pointerEvents={'none'}>
                 <View style={styles.row}>
                   <Animated.View style={likeOpacityStyle}>
