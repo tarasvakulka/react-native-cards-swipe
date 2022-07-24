@@ -278,7 +278,7 @@ const CardsSwipe = forwardRef(
             {renderCard(cards[secondIndex])}
           </CardWrap>
         ) : null}
-        {index >= 0 ? (
+        {index >= 0 && cards.length > 0 ? (
           <SwipePan
             {...{
               onSnap: onCardSwiped,
