@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Dimensions } from 'react-native';
+import type { GestureHandleEvent } from 'lib/typescript/types';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import {
   useAnimatedGestureHandler,
@@ -22,11 +23,13 @@ interface Props {
   x: Value;
   y: Value;
   originY: Value;
-  onSnap: (swipedRight: boolean) => void;
-  onStart: () => void;
-  onEnd: () => void;
-  onChangeDirection: (direction: SWIPE_DIRECTION) => void;
   children: React.ReactNode;
+  onSnap: (swipedRight: boolean) => void;
+  onStart: (event: GestureHandleEvent) => void;
+  onEnd: (event: GestureHandleEvent) => void;
+  onChangeDirection: (direction: SWIPE_DIRECTION) => void;
+  onDragAround: (event: GestureHandleEvent) => void;
+  onFinish: (event: GestureHandleEvent) => void;
 }
 
 type AnimatedGHContext = {
@@ -43,6 +46,8 @@ const SwipePan = ({
   onStart,
   onChangeDirection,
   onEnd,
+  onDragAround,
+  onFinish,
   originY,
   children,
 }: Props) => {
@@ -53,11 +58,13 @@ const SwipePan = ({
       ctx.startY = y.value;
 
       originY.value = event.y;
-      runOnJS(onStart)();
+      runOnJS(onStart)(event);
     },
     onActive: (event, ctx) => {
       x.value = ctx.startX + event.translationX;
       y.value = ctx.startY + event.translationY;
+      if (onDragAround) runOnJS(onDragAround)(event);
+
       const direction =
         Math.round(x.value) > 0 ? SWIPE_DIRECTION.RIGHT : SWIPE_DIRECTION.LEFT;
       if (direction !== directionX.value) {
@@ -66,8 +73,7 @@ const SwipePan = ({
       }
     },
     onEnd: (event, ctx) => {
-      runOnJS(onEnd)();
-
+      runOnJS(onEnd)(event);
       const thresh = width * 0.4;
       const diff = ctx.startX + event.translationX;
       directionX.value = SWIPE_DIRECTION.DEFAULT;
@@ -82,6 +88,7 @@ const SwipePan = ({
         y.value = withSpring(0);
       }
     },
+    onFinish: (event) => runOnJS(onFinish)(event),
   });
 
   return (
