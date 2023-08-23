@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Image, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import CardsSwipe from 'react-native-cards-swipe';
+import type { CardsSwipeRefObject } from 'types';
 
 const cardsData = [
   { src: require('./assets/images/1.jpg') },
