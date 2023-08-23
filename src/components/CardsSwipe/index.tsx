@@ -16,6 +16,7 @@ import Animated, {
   withTiming,
   runOnJS,
   withDelay,
+  Extrapolate,
 } from 'react-native-reanimated';
 
 import SwipePan, { SWIPE_DIRECTION } from '../SwipePan';
@@ -243,7 +244,7 @@ const CardsSwipe = forwardRef(
         x.value,
         [-horizontalThreshold, -0.01, 0, 0.01, horizontalThreshold],
         [1, lowerCardZoom, lowerCardZoom, lowerCardZoom, 1],
-        Animated.Extrapolate.CLAMP
+        Extrapolate?.CLAMP ?? 'clamp'
       );
 
       return {
