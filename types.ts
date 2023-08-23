@@ -1,4 +1,4 @@
-interface CardsSwipeRefObject {
+export interface CardsSwipeRefObject {
   swipeLeft: () => void;
   swipeRight: () => void;
 }
